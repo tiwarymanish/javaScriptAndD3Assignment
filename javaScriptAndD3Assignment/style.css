@@ -1,0 +1,76 @@
+.toolTip{
+	background:#FA46D0;
+	position:absolute;
+	color:white;
+	border:2px;
+	font-size:16px;
+	border-color: #40293A;
+	padding: 5px;
+
+	}
+	  body{
+    text-align:center;
+
+  }
+  svg
+  {
+    background:#DFC65A;
+    color:white;
+  }
+  .fixTopRight
+{
+	margin:auto;
+	position: relative;
+	top:200px;
+}
+  .bar{
+    fill: lightgreen;
+
+  }
+
+  .bar:hover{
+    fill: white;
+
+  }
+
+ .black
+ {
+  fill:black;
+  position: absolute;
+  z-index:-100;
+ }
+
+ .black:hover
+ {
+  fill:white;
+
+ }
+
+	.axis {
+	  font: 12px sans-serif;
+    fill:white;
+    	}
+
+	.axis path,
+	.axis line {
+	  fill: none;
+	  stroke: #000;
+	  shape-rendering: crispEdges;
+
+	}
+path
+{
+	fill:none;
+}
+.fatline:hover,.fatline:focus
+{
+	fill:red;
+}
+.protienline:hover,.fatline:focus
+{
+	fill:green;
+}
+.carbohydrateline:hover,.fatline:focus
+{
+	fill:blue;
+}

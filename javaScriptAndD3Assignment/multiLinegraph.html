@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <!-- include external stylesheet-->
+  <link rel="stylesheet" href="style.css">
+</head>
+<style>
+path{
+  //fill:none;
+}
+
+
+</style>
+<body>
+  <h2>Fat, Protein & Carbohydrate  Consumption</h2>
+  <!-- include d3.js script-->
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+
+  <script>
+  // set the dimensions of the bar chart
+  var margin = {top: 20, right: 20, bottom: 100, left: 80},
+      width = 1000 - margin.left - margin.right,
+      height = 600 - margin.top - margin.bottom;
+
+  var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+  // set the ranges
+  var x = d3.scale.ordinal().rangeRoundBands([0, width], .5);
+  var y = d3.scale.linear().range([height, 10]);
+
+  // define the axis
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+   // colors for line path
+  var color = d3.scale.ordinal().range(["red","green","blue"]);
+  // load json data
+  d3.json("europeanCountries.json", function(error, data) {
+    data.forEach(function(d) {
+      d.country = d.Region;
+      d.Fat = d.fat;
+      d.Protien = d.proteins;
+      d.Carbohydrates = d.carbohydrates;
+    });
+  // assign country & fat values
+  var fatcountry = d3.svg.line()
+    .x(function(d) { return x(d.country); })
+    .y(function(d) { return y(d.Fat); });
+
+  // assign country & Protien values
+  var protiencountry = d3.svg.line()
+    .x(function(d) { return x(d.country); })
+    .y(function(d) { return y(d.Protien); });
+
+  // assign country & Carbohydrate values
+    var carbohydratecountry = d3.svg.line()
+      .x(function(d) { return x(d.country); })
+      .y(function(d) { return y(d.Carbohydrates); });
+
+      // the tooltip
+  var div = d3.select("body").append("div")
+      .attr("class", "toolTip")
+      ;
+    // svg element
+  var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+   // array of items
+  var xData=["Fat","Protien","Carbohydrates"];
+   // assign all country to x axis domain
+    x.domain(data.map(function(d){
+        return d.country;
+    }));
+    // assign all items value to y axis domain
+    y.domain([0, d3.max(data, function(d) { return Math.max(d.Fat, d.Protien,d.Carbohydrates); })]);
+
+    // draw line for fat
+    svg.append("path")
+      .attr("class", "fatline")
+      .style("stroke", color(0))
+      .style("fill",'none')
+      .attr("d", fatcountry(data));
+
+  // draw line for protien
+    svg.append("path")
+      .attr("class", "protienline")
+      .style("stroke", color(1))
+.style("fill",'none')
+      .attr("d", protiencountry(data));
+  // draw line for carbohydrate
+      svg.append("path")
+        .attr("class", "carbohydrateline")
+        .style("stroke", color(2))
+        .style("fill",'none')
+        .attr("d", carbohydratecountry(data));
+  // x aixs
+
+  svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+        .append("text")
+         .attr("transform", "translate(" + width + ",0)")
+         .attr("dy","3em")
+         .attr("dx","-3em")
+         .style('fill', '#000')
+         .style("font-size","20px")
+         .style("font-weight","bold")
+         .style("color","red")
+         .text("Regions");
+
+    // y axis
+
+      svg.append("g")
+      .attr("class", "axis")
+      .call(yAxis)
+      .append("text")
+         .attr("transform", "rotate(-90)")
+         .attr("dy","-3em")
+         .style('fill', '#000')
+         .style("text-anchor", "end")
+         .style("font-size","20px")
+         .style("font-weight","bold")
+         .text("Quantity");
+
+         // fat dots
+         svg.selectAll("dot")
+          .data(data)
+      .enter().append("circle")
+          .style('fill', 'red')
+          .attr("r", 5)
+          .attr("cx", function(d) { return x(d.country); })
+          .attr("cy", function(d) { return y(d.Fat); })
+          // mouse move event on fat dots
+    .on("mousemove", function(d){
+                // show tooltip text
+                 tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .style('background', 'red')
+                .html("Fat:<br>"+d.country + "<br>"  + (d.Fat)+"kg");
+          })
+      // mouse out event on fat dots
+          .on("mouseout", function(d){ tooltip.style("background", "none")
+            .style('display', 'none')
+            ;});
+
+
+    // protien dots
+          svg.selectAll("dot")
+          .data(data)
+      .enter().append("circle")
+          .style('fill', 'green')
+          .attr("r", 5)
+          .attr("cx", function(d) { return x(d.country); })
+          .attr("cy", function(d) { return y(d.Protien); })
+
+    // mouse move event on protien dots
+      .on("mousemove", function(d){
+        // show tooltip text
+                 tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .style('background', 'green')
+                .html("Protien:<br>"+d.country + "<br>"  + (d.Protien)+"kg");
+          })
+       // mouse out event on protien dots
+          .on("mouseout", function(d){ tooltip.style("background", "none")
+       .style('display', 'none')
+            ;});
+
+       //  Carbohydrates dots
+          svg.selectAll("dot")
+          .data(data)
+      .enter().append("circle")
+          .style('fill', 'blue')
+          .attr("r", 5)
+          .attr("cx", function(d) { return x(d.country); })
+          .attr("cy", function(d) { return y(d.Carbohydrates); })
+
+          // mouse move event on carbohydrate dots
+           .on("mousemove", function(d){
+            // show tooltip text
+                 tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .style('background', 'blue')
+                .html("Carbohydrate:<br>"+d.country + "<br>"  + (d.Carbohydrates)+"kg");
+          })
+           // mouse out event on carbohydrate dots
+          .on("mouseout", function(d){ tooltip.style("background", "none")
+       .style('display', 'none')
+            ;});
+        // list of items with color box right side top
+         var showText = svg.selectAll(".legend")
+           .data(color.domain().slice())
+         .enter().append("g")
+           .attr("class", "legend")
+           .attr("transform", function(d, i) { return "translate(0," + i * 20 +")"; });
+
+
+       showText.append("rect")
+           .attr("x", width - 18)
+           .attr("width", 18)
+           .attr("height", 18)
+           .style("fill", color);
+
+       showText.append("text")
+           .attr("x", width - 24)
+           .attr("y", 9)
+           .attr("dy", ".35em")
+           .style("text-anchor", "end")
+           .style('fill', '#ffffff')
+           .style('font-size','20px')
+           .text(function(d,i) { return xData[i]; });
+
+
+  });
+
+
+
+</script>
+</body>
+</html>
